@@ -3,8 +3,8 @@
   NPM_FLAGS = "--prefix=/dev/null"
 
 [build]
-  base = "/"
-  publish = "packages/hoppscotch-web/dist"
+  base = "/opt/build/repo"
+  publish = "/opt/build/repo/packages/hoppscotch-web/dist"
   command = "npx pnpm i --store=node_modules/.pnpm-store && npx pnpm run generate"
 
 [[headers]]
