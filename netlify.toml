@@ -75,3 +75,9 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+[[redirects]]
+  from = "/*"
+  port = 3100
+  to = "/admin"
+  targetPort = 8888
