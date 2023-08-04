@@ -11,6 +11,7 @@ services:
       dockerfile: packages/hoppscotch-backend/Dockerfile
       context: .
       target: prod
+    image: tutusbot/hoppscotch-backend
     env_file:
       - ./.env
     restart: always
@@ -36,6 +37,7 @@ services:
     build:
       dockerfile: packages/hoppscotch-selfhost-web/Dockerfile
       context: .
+    image: tutusbot/hoppscotch-app
     env_file:
       - ./.env
     depends_on:
@@ -47,16 +49,17 @@ services:
   # NOTE: To do TLS or play around with how the app is hosted, you can look into the Caddyfile for
   #       the SH admin dashboard server at packages/hoppscotch-sh-admin/Caddyfile
   hoppscotch-sh-admin:
-    container_name: hoppscotch-sh-admin
     build:
       dockerfile: packages/hoppscotch-sh-admin/Dockerfile
       context: .
+    image: tutusbot/hoppscotch-sh-admin
+    container_name: hoppscotch-sh-admin
     env_file:
       - ./.env
     depends_on:
       - hoppscotch-backend
     ports:
-      - "3100:8080"
+      - "3100:3100"
 
   # The preset DB service, you can delete/comment the below lines if
   # you are using an external postgres instance
@@ -73,9 +76,11 @@ services:
       POSTGRES_PASSWORD: testpass
       POSTGRES_DB: hoppscotch
     healthcheck:
-      test: ["CMD-SHELL", "sh -c 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}'"]
+      test:
+        [
+          "CMD-SHELL",
+          "sh -c 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}'",
+        ]
       interval: 5s
       timeout: 5s
       retries: 10
-
-

@@ -1,0 +1,54 @@
+version: "3.7"
+services:
+  hoppscotch-backend:
+    container_name: hoppscotch-backend
+    image: tutusbot/hoppscotch-backend:latest
+    restart: always
+    environment:
+      - PORT=3170
+      - DATABASE_URL=postgresql://postgres:b!sX6j15gR05@hoppscotch-db:5432/hoppscotch
+    env_file:
+      - ./.env
+    volumes:
+      - /usr/src/app/node_modules/
+    depends_on:
+      hoppscotch-db:
+        condition: service_healthy
+    ports:
+      - "3170:3170"
+  hoppscotch-app:
+    container_name: hoppscotch-app
+    image: tutusbot/hoppscotch-app:latest
+    env_file:
+      - ./.env
+    depends_on:
+      - hoppscotch-backend
+    ports:
+      - "3000:3000"
+  hoppscotch-sh-admin:
+    image: tutusbot/hoppscotch-sh-admin:latest
+    container_name: hoppscotch-sh-admin
+    env_file:
+      - ./.env
+    depends_on:
+      - hoppscotch-backend
+    ports:
+      - "3100:3100"
+  hoppscotch-db:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    user: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: b!sX6j15gR05
+      POSTGRES_DB: hoppscotch
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "sh -c 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}'",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
